@@ -1,0 +1,25 @@
+name: Delete Tag
+author: Tanyi Chen
+description: Delete a tag with associated release
+inputs:
+  tag:
+    description: Tag name for deleting
+    required: true
+  token:
+    description: Github token
+    default: ${{ github.token }}
+  keep_release:
+    description: Don't delete release
+runs:
+  using: composite
+  steps:
+    - name: Delete Tag
+      run: |
+        if [[ -z "${KEEP_RELEASE}" ]]; then ${GITHUB_ACTION_PATH}/delete_release.py; fi
+        git status || git init
+        git push https://${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} :${TAG}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        TAG: ${{ inputs.tag }}
+        KEEP_RELEASE: ${{ inputs.keep_release }}

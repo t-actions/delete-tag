@@ -10,16 +10,19 @@ inputs:
     default: ${{ github.token }}
   keep_release:
     description: Don't delete release
+  ignore_error:
+    description: Ignore error when deleting tag
 runs:
   using: composite
   steps:
     - name: Delete Tag
       run: |
-        if [[ -z "${KEEP_RELEASE}" ]]; then ${GITHUB_ACTION_PATH}/delete_release.py; fi
+        if [[ -z "${{ inputs.keep_release }}" ]]; then ${GITHUB_ACTION_PATH}/delete_release.py; fi
         git status || git init
-        git push https://${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} :${TAG}
+        git push https://${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} :${TAG} \
+          || if [[ -z "${IGNORE_ERROR}" ]]; then exit 1; fi
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
+        IGNORE_ERROR: ${{ inputs.ignore_error }}
         TAG: ${{ inputs.tag }}
-        KEEP_RELEASE: ${{ inputs.keep_release }}

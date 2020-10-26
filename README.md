@@ -17,4 +17,8 @@ Github Actions to delete tag as well as release
     # Only delete the tag and keep the release if it is not empty
     # Default is empty
     keep_release: ''
+
+    # Ingore error when deleting tag if it is not empty
+    # Default is empty
+    ignore_error: ''
 ```

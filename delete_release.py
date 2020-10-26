@@ -9,7 +9,8 @@ import requests
 def delete_release(repo: str, tag: str, sess = requests.Session()):
     r = sess.get('https://api.github.com/repos/{0}/releases/tags/{1}'.format(
         repo, tag))
-    r.raise_for_status()
+    if not os.environ.get('IGNORE_ERROR'):
+        r.raise_for_status()
 
     release_id = r.json().get('id')
     if not release_id:
@@ -19,7 +20,8 @@ def delete_release(repo: str, tag: str, sess = requests.Session()):
 
     r = sess.delete('https://api.github.com/repos/{0}/releases/{1}'.format(
         repo, release_id))
-    r.raise_for_status()
+    if not os.environ.get('IGNORE_ERROR'):
+        r.raise_for_status()
     logging.info('Deleted release "{0}"'.format(tag))
 
 
@@ -46,7 +48,7 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level = logging.INFO,
+        level = logging.DEBUG,
         format = '%(asctime)s %(levelname)s %(message)s',
         datefmt = '%Y-%m-%d %X')
     main()

@@ -4,6 +4,7 @@ import sys
 import json
 import logging
 import requests
+import requests.adapters
 
 
 def delete_release(repo: str, tag: str, sess = requests.Session()):
@@ -54,6 +55,8 @@ def main():
 
     with requests.Session() as sess:
         sess.headers['Authorization'] = 'token {0}'.format(token)
+        sess.mount('http://', requests.adapters.HTTPAdapter(max_retries = 5))
+        sess.mount('https://', requests.adapters.HTTPAdapter(max_retries = 5))
         delete_release(repo, tag, sess)
 
 
